@@ -1,15 +1,10 @@
-const { faker } = require("@faker-js/faker/locale/az");
-const getAge = require("get-age");
-const employees = [];
-for (let i = 0; i < 10; i++) {
-  employees.push({
-    id: faker.datatype.uuid(),
-    name: faker.name.fullName(),
-    age: getAge(faker.date.birthdate()),
-  });
-}
+const mysql = require("mysql2");
+const connection = mysql.createConnection({
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "toor",
+  database: "ders_db",
+});
 
-const db = {
-  employees,
-};
-module.exports = { db };
+module.exports = { connection };

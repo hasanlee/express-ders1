@@ -1,12 +1,73 @@
 const express = require("express");
-const { db } = require("./db");
+const { connection } = require("./db");
 const app = express();
 const port = 5000;
 
-app.get("/", (req, res) => {
-  res.send(db.employees);
+connection.connect((err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("connected to db");
+  }
+});
+
+app.use(express.json());
+
+app.get("/tasks", (req, res) => {
+  connection.query("SELECT * FROM tasks;", (err, data) => {
+    if (err) return res.status(500).json(err);
+    res.json(data);
+  });
+});
+
+app.post("/tasks", (req, res) => {
+  connection.query(
+    "INSERT INTO tasks (description, due_date, finished_date,employee) VALUES  (?,?,?,?)",
+    [
+      req.body.description,
+      req.body.due_date,
+      req.body.finished_date,
+      req.body.employee,
+    ],
+    (error, result) => {
+      if (error) return res.json({ error: error });
+      res.json(result.insertId);
+    }
+  );
+});
+
+app.get("/tasks/:id", (req, res) => {
+  connection.query(
+    `SELECT * FROM tasks WHERE id = ${req.params.id}`,
+    // [req.params.id],
+    (err, data) => {
+      if (err) return res.status(500);
+      res.json(data);
+    }
+  );
+});
+
+app.put("/tasks/:id", (req, res) => {
+  connection.query(
+    "UPDATE tasks SET ? WHERE id=? ",
+    [req.body, req.params.id],
+    (err, data) => {
+      if (err) return res.status(500);
+      res.json(data);
+    }
+  );
+});
+
+app.delete("/tasks/:id", (req, res) => {
+  connection.query("DELETE tasks WHERE id=? ", [req.params.id], (err, data) => {
+    if (err) return res.status(500);
+    if (data.affectedRows) {
+      res.json({ message: "Deleted" });
+    }
+    res.json(data);
+  });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });
