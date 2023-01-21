@@ -36,6 +36,7 @@ app.post("/tasks", (req, res) => {
   );
 });
 
+//SQL injection possible. Test API endpoint.
 app.get("/tasks/:id", (req, res) => {
   connection.query(
     `SELECT * FROM tasks WHERE id = ${req.params.id}`,
