@@ -13,6 +13,7 @@ connection.connect((err) => {
 
 app.use(express.json());
 
+//GET All
 app.get("/tasks", (req, res) => {
   connection.query("SELECT * FROM tasks;", (err, data) => {
     if (err) return res.status(500).json(err);
@@ -20,6 +21,7 @@ app.get("/tasks", (req, res) => {
   });
 });
 
+//INSERT New
 app.post("/tasks", (req, res) => {
   connection.query(
     "INSERT INTO tasks (description, due_date, finished_date,employee) VALUES  (?,?,?,?)",
@@ -36,6 +38,7 @@ app.post("/tasks", (req, res) => {
   );
 });
 
+//GET by ID
 //SQL injection possible. Test API endpoint.
 app.get("/tasks/:id", (req, res) => {
   connection.query(
@@ -48,6 +51,7 @@ app.get("/tasks/:id", (req, res) => {
   );
 });
 
+//UPDATE by ID
 app.put("/tasks/:id", (req, res) => {
   connection.query(
     "UPDATE tasks SET ? WHERE id=? ",
@@ -59,6 +63,7 @@ app.put("/tasks/:id", (req, res) => {
   );
 });
 
+//DELETE by ID
 app.delete("/tasks/:id", (req, res) => {
   connection.query("DELETE tasks WHERE id=? ", [req.params.id], (err, data) => {
     if (err) return res.status(500);
