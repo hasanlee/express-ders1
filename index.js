@@ -65,13 +65,17 @@ app.put("/tasks/:id", (req, res) => {
 
 //DELETE by ID
 app.delete("/tasks/:id", (req, res) => {
-  connection.query("DELETE tasks WHERE id=? ", [req.params.id], (err, data) => {
-    if (err) return res.status(500);
-    if (data.affectedRows) {
-      res.json({ message: "Deleted" });
+  connection.query(
+    "SELECT * FROM tasks WHERE id=?; DELETE FROM tasks WHERE id=? ",
+    [req.params.id, req.params.id],
+    (err, data) => {
+      if (err) return res.status(500);
+      if (data[1].affectedRows) {
+        res.json({ message: "Deleted", data: data[0] });
+      }
+      res.json(data);
     }
-    res.json(data);
-  });
+  );
 });
 
 app.listen(port, () => {
